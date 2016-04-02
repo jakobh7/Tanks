@@ -1,6 +1,7 @@
 package sprites;
 
 import javafx.scene.image.Image;
+import main.SoundManager;
 import main.Tanks;
 
 public abstract class Tank extends Character {
@@ -46,6 +47,7 @@ public abstract class Tank extends Character {
 		double angle = Math.atan2(bulydir, bulxdir);
 		double bulxvel = 4 * -Math.cos(angle);
 		double bulyvel = 4 * -Math.sin(angle);
+		SoundManager.playGunSound();
 		return new Bullet(getCannonX(),getCannonY(),bulxvel,bulyvel);
 	}
 	

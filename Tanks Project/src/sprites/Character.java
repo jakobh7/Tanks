@@ -2,6 +2,7 @@ package sprites;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import main.SoundManager;
 
 public abstract class Character {
 	protected double x, y;
@@ -68,5 +69,6 @@ public abstract class Character {
 		explosionNum=0;
 		dx = 0;
 		dy=0;
+		SoundManager.playExplosionSound();
 	}
 }
