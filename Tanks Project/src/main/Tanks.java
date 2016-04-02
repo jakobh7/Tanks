@@ -10,6 +10,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -38,6 +39,7 @@ public class Tanks extends Application {
 	private static int numEnemies;
 	private static int playerDir;
 	private static Player playerChar;
+	private MediaPlayer musicplayer;
 	public static double getPlayerX(){return playerChar.getX();}
 	public static double getPlayerY(){return playerChar.getY();}
 	public static int getPlayerDir(){return playerDir;}
@@ -82,6 +84,13 @@ public class Tanks extends Application {
 	
 	private void initialize(){
 		ImageManager.setImages();
+		musicplayer = new MediaPlayer(SoundManager.getBackgroundSong());
+		musicplayer.setOnEndOfMedia(new Runnable(){
+			public void run(){
+				musicplayer.seek(Duration.ZERO);
+			}
+		});
+		musicplayer.play();
 		gamestate = 0;
 	}
 	

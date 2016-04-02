@@ -18,7 +18,7 @@ public class PlayCell {
 	int col;
 	int row;
 	public ArrayList<Character> currentActors;
-	private ArrayList<Integer> deadActors;
+	private ArrayList<Character> actorsToBeRemoved;
 	private PlayField parentField;
 	public PlayCell(int startx, int starty, boolean isWalled, PlayField parent){
 		x = startx;
@@ -28,7 +28,7 @@ public class PlayCell {
 		walled = isWalled;
 		parentField = parent;
 		currentActors = new ArrayList<Character>();
-		deadActors = new ArrayList<Integer>();
+		actorsToBeRemoved = new ArrayList<Character>();
 	}
 	
 	public void addCharacter(Character newCharacter){
@@ -51,7 +51,8 @@ public class PlayCell {
 		for(int actor=0; actor<currentActors.size(); actor++){ 
 			Character temp = currentActors.get(actor);
 			if(temp.isDead()){
-				deadActors.add(actor);
+				actorsToBeRemoved.add(temp);
+				if(temp instanceof Enemy) Tanks.enemyKilled();
 			}
 			else{
 				temp.update();
@@ -65,16 +66,16 @@ public class PlayCell {
 					}
 					if(temp.getX()<x||temp.getX()>x+Tanks.CELLSIZE||temp.getY()<y||temp.getY()>y+Tanks.CELLSIZE){
 						parentField.placeCharacter(temp);
-						currentActors.remove(temp);
+						actorsToBeRemoved.add(temp);
 					}
 				}
 			}
 		}
-		for(int dead = 0; dead<deadActors.size(); dead++){
-			currentActors.remove(deadActors.get(dead));
-			//System.out.println("num dead: " + deadActors.size());
+		for(int dead = 0; dead<actorsToBeRemoved.size(); dead++){
+			currentActors.remove(actorsToBeRemoved.get(dead));
+			System.out.println("num dead: " + actorsToBeRemoved.size());
 		}
-		deadActors.clear();
+		actorsToBeRemoved.clear();
 	}
 
 	private void checkCollisions(Character actor) {
