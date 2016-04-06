@@ -15,26 +15,18 @@ public class PlayField {
 	public PlayField(int width, int height, int levelNum){
 		this.width = width;
 		this.height = height;
+		numCols = Tanks.NUMCOLS;
+		numRows = Tanks.NUMROWS;
+		cellArray = new PlayCell[numRows][numCols];
 		initializeCellsForLevel(levelNum);
 	}
 
 	private void initializeCellsForLevel(int levelNum) {
-		numCols = this.width/Tanks.CELLSIZE;
-		numRows = this.height/Tanks.CELLSIZE;
-		cellArray = new PlayCell[numRows][numCols];
 		for(int row = 0; row < numRows; row++){
 			for(int col = 0; col<numCols; col++){
-				cellArray[row][col] = new PlayCell(col*Tanks.CELLSIZE, row*Tanks.CELLSIZE, getWalled(row,col,levelNum), this);
+				cellArray[row][col] = new PlayCell(col*Tanks.CELLSIZE, row*Tanks.CELLSIZE, LevelManager.getWalled(row,col,levelNum), this);
 			}
 		}
-	}
-	private boolean getWalled(int row, int col,int levelNum){
-		if (row==0)return true;
-		else if (col==0)return true;
-		else if (row==numRows-1) return true;
-		else if (col==numCols-1) return true;
-		//else if (((levelNum-1)*row*col)%4==0) return true;
-		else return false;
 	}
 	
 	public void renderEachCell(GraphicsContext gc){
@@ -51,7 +43,7 @@ public class PlayField {
 			}
 		}
 	}
-
+	
 	public void placeCharacter(Character temp) {
 		int col = (int)temp.getX()/Tanks.CELLSIZE;
 		int row = (int)temp.getY()/Tanks.CELLSIZE;

@@ -73,7 +73,6 @@ public class PlayCell {
 		}
 		for(int dead = 0; dead<actorsToBeRemoved.size(); dead++){
 			currentActors.remove(actorsToBeRemoved.get(dead));
-			System.out.println("num dead: " + actorsToBeRemoved.size());
 		}
 		actorsToBeRemoved.clear();
 	}

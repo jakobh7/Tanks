@@ -1,5 +1,7 @@
 package main;
 
+import java.util.ArrayList;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -34,10 +36,13 @@ public class Tanks extends Application {
 	public final static int TANKSIZE = 40;
 	public final static int BULLETSIZE = 10;
 	public final static int CELLSIZE = 50;
+	public final static int NUMCOLS = WIDTH/CELLSIZE;
+	public final static int NUMROWS = HEIGHT/CELLSIZE;
 		
 	private static int gamestate;
 	private static int numEnemies;
 	private static int playerDir;
+	private static int levelNum;
 	private static Player playerChar;
 	private MediaPlayer musicplayer;
 	public static double getPlayerX(){return playerChar.getX();}
@@ -84,6 +89,7 @@ public class Tanks extends Application {
 	
 	private void initialize(){
 		ImageManager.setImages();
+		LevelManager.setLevels();
 		musicplayer = new MediaPlayer(SoundManager.getBackgroundSong());
 		musicplayer.setOnEndOfMedia(new Runnable(){
 			public void run(){
@@ -92,6 +98,7 @@ public class Tanks extends Application {
 		});
 		musicplayer.play();
 		gamestate = 0;
+		levelNum = 1;
 	}
 	
 	private void setupLevel(int level){
@@ -100,11 +107,11 @@ public class Tanks extends Application {
 		playerChar = new Player(50,50,0,0);
 		addActor(playerChar);
 		//TODO: Add level Manager
-		addEnemies(level);
+		addEnemies(LevelManager.GetEnemies(level-1));
 	}
-	private void addEnemies(int level) {
-		for(int i=0; i<level; i++){
-			addActor(new Enemy(100+level*CELLSIZE, 300+level*CELLSIZE,0,0,0));
+	private void addEnemies(ArrayList<Enemy> enemies) {
+		for(int i=0; i<enemies.size(); i++){
+			addActor(enemies.get(i));
 			numEnemies++;
 		}
 	}	
@@ -125,10 +132,8 @@ public class Tanks extends Application {
 			gc.setStroke(Color.DIMGRAY);
 			gc.setTextAlign(TextAlignment.CENTER);
 			gc.setFont(Font.font(32));
-			gc.fillText("Welcome to Tanks! (Beta - only level 1 implemented)", WIDTH/2, 50);
-			gc.strokeText("Welcome to Tanks! (Beta - only level 1 implemented)", WIDTH/2, 50);
+			gc.fillText("Welcome to Tanks! (Beta - Five levels with bad AI)", WIDTH/2, 50);
 			gc.fillText("Press space to start the game.", WIDTH/2, 600);
-			gc.strokeText("Press space to start the game.", WIDTH/2, 600);
 			
 			gc.setTextAlign(TextAlignment.LEFT);
 			gc.fillText("Drive with WSAD keys or Arrow Keys", 200, 350);
@@ -143,6 +148,18 @@ public class Tanks extends Application {
     		field.renderEachCell(gc);
     	}
     	if(gamestate==2){
+    		gc.setFill(Color.GRAY);
+    		gc.fillRect(0, 0, WIDTH, HEIGHT);
+    		
+    		gc.setFill(Color.CYAN);
+    		gc.setTextAlign(TextAlignment.CENTER);
+    		gc.setFont(Font.font(72));
+    		gc.fillText("Level " + (levelNum+1), WIDTH/2, HEIGHT/2);
+    		
+    		gc.setFont(Font.font(24));
+    		gc.fillText("Press Space to start the level", WIDTH/2, 600);
+    	}
+    	if(gamestate==3){
     		gc.setFill(Color.DARKGREEN);
 			gc.fillRect(0, 0, WIDTH, HEIGHT);
 			
@@ -154,7 +171,7 @@ public class Tanks extends Application {
 			gc.setFont(Font.font(24));
 			gc.fillText("Press Space to play again", WIDTH/2, 600);
     	}
-    	if(gamestate==3){
+    	if(gamestate==4){
     		gc.setFill(Color.DARKRED);
 			gc.fillRect(0, 0, WIDTH, HEIGHT);
 			
@@ -172,8 +189,11 @@ public class Tanks extends Application {
 	protected void update() {
 		if(gamestate==1){
 			field.updateEachCell();
-			if(numEnemies==0&&playerChar.isAlive()) gamestate = 2;
-			if(playerChar.isDead())gamestate = 3;
+			if(numEnemies==0&&playerChar.isAlive()){
+				if(levelNum < LevelManager.numLevels)gamestate = 2;
+				else gamestate = 3;
+			}
+			if(playerChar.isDead())gamestate = 4;
 		}
 	}
 
@@ -182,11 +202,23 @@ public class Tanks extends Application {
 		//key input code borrowed and adapted from Mike Slattery
 		scene.setOnKeyPressed(
 					e->{
-						if(gamestate == 0||gamestate==2||gamestate==3){
+						if(gamestate == 0||gamestate==3||gamestate==4){
+							switch (e.getCode()){
+							case SPACE:
+								levelNum = 1;
+								gamestate=1;
+								setupLevel(levelNum);
+								break;
+							default:
+								break;
+							}
+						}
+						if(gamestate == 2){
 							switch (e.getCode()){
 							case SPACE:
 								gamestate=1;
-								setupLevel(1);
+								levelNum++;
+								setupLevel(levelNum);
 								break;
 							default:
 								break;

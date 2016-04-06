@@ -44,7 +44,6 @@ public abstract class Character {
 			}
 			else{
 				dead = true;
-				System.out.println("This should never print more than once");
 			}
 		}
 		characterImage = getImage();
